@@ -1,5 +1,7 @@
 import tcod
 
+from actions import EscapeAction, MovementAction
+from input_handlers import EventHandler
 
 def main() -> None:
     # variables for screen size
@@ -15,6 +17,9 @@ def main() -> None:
     tileset = tcod.tileset.load_tilesheet(
         "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
+
+    # event_handler is an instance of our EventHandler class
+    event_handler = EventHandler()
 
     # creates the screen
     with tcod.context.new_terminal(
@@ -35,11 +40,25 @@ def main() -> None:
             # updates the screen with what we've told it to display
             context.present(root_console)
 
+            # clears previous draw
+            root_console.clear()
+
             # waits for input from the user
             for event in tcod.event.wait():
-                # allows user to quit by clicking the x
-                if event.type == "QUIT":
-                    # quits the current running program
+                # sort the action using event_handler
+                action = event_handler.dispatch(event)
+
+                # skip over the rest of the loop if action is None
+                if action is None:
+                    continue
+
+                # draws player movement
+                if isinstance(action, MovementAction):
+                    player_x += action.dx
+                    player_y += action.dy
+
+                # if escape key is pressed, exit program
+                elif isinstance(action, EscapeAction):
                     raise SystemExit()
 
 
