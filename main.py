@@ -5,6 +5,7 @@ from entity import Entity
 from input_handlers import EventHandler
 from procgen import generate_dungeon
 
+
 def main() -> None:
     # variables for screen size
     screen_width = 80
